@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GrandMA3 Ref">
+<title>GrandMA3 Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f11;
+    --surface: #18181c;
+    --surface2: #1f1f25;
+    --border: #2a2a33;
+    --accent: #f0a500;
+    --accent2: #3b82f6;
+    --accent3: #10b981;
+    --danger: #ef4444;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #5a5a6e;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: env(safe-area-inset-top, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    padding-bottom: calc(80px + var(--safe-bottom));
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,15,17,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: calc(var(--safe-top) + 12px) 16px 12px;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .app-title {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+  .app-title span {
+    color: var(--accent);
+  }
+  .search-wrap {
+    position: relative;
+    margin-top: 10px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 14px;
+    pointer-events: none;
+  }
+  #search {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 12px 9px 34px;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    -webkit-appearance: none;
+  }
+  #search::placeholder { color: var(--text3); }
+  #search:focus { border-color: var(--accent2); }
+  #search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--text3);
+    color: var(--bg);
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+  #search-clear.visible { display: flex; }
+
+  /* ── TOC ── */
+  #toc-panel {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+  #toc-panel.open { max-height: 70vh; overflow-y: auto; }
+  .toc-inner { padding: 8px 0 12px; }
+  .toc-day {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 10px 16px 4px;
+  }
+  .toc-item {
+    display: block;
+    padding: 9px 16px 9px 24px;
+    color: var(--text2);
+    font-size: 14px;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .toc-item:active { background: var(--surface2); color: var(--accent); border-left-color: var(--accent); }
+
+  /* ── TOC TOGGLE BUTTON ── */
+  #toc-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text2);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  #toc-btn .chevron { transition: transform 0.25s; display: inline-block; }
+  #toc-btn.open .chevron { transform: rotate(180deg); }
+
+  /* ── MAIN CONTENT ── */
+  main { padding: 0 0 24px; }
+
+  /* ── DAY SECTIONS ── */
+  .day-header {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 20px 16px 16px;
+    margin-top: 8px;
+  }
+  .day-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .day-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  /* ── SECTION BLOCKS ── */
+  .section {
+    margin: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 16px;
+    cursor: pointer;
+    user-select: none;
+    gap: 12px;
+  }
+  .section-header:active { background: var(--surface); }
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+  .section-chevron {
+    color: var(--text3);
+    font-size: 12px;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .section.open .section-chevron { transform: rotate(180deg); }
+  .section-body {
+    display: none;
+    padding: 0 16px 16px;
+    background: var(--surface);
+  }
+  .section.open .section-body { display: block; }
+
+  /* ── BODY TEXT ── */
+  .body-text {
+    color: var(--text2);
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+
+  /* ── NOTE / WARNING ── */
+  .note, .warn {
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .note {
+    background: rgba(59,130,246,0.08);
+    border-left: 3px solid var(--accent2);
+    color: #93b4d8;
+  }
+  .warn {
+    background: rgba(239,68,68,0.08);
+    border-left: 3px solid var(--danger);
+    color: #d89393;
+  }
+  .note strong, .warn strong { font-weight: 600; }
+
+  /* ── CODE ── */
+  .code-block {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: #0a0a0d;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    overflow-x: auto;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 280px;
+  }
+  thead tr {
+    background: var(--surface2);
+  }
+  th {
+    text-align: left;
+    padding: 9px 12px;
+    font-weight: 600;
+    color: var(--text2);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 12px;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+  td:first-child { color: var(--text); font-weight: 500; }
+  td code, th code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    background: rgba(240,165,0,0.1);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* ── CHIPS / TAGS ── */
+  .chip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-right: 4px;
+  }
+  .chip-green { background: rgba(16,185,129,0.15); color: var(--accent3); }
+  .chip-blue  { background: rgba(59,130,246,0.15); color: #60a5fa; }
+  .chip-red   { background: rgba(239,68,68,0.15);  color: #f87171; }
+  .chip-amber { background: rgba(240,165,0,0.15);  color: var(--accent); }
+
+  /* ── SEARCH RESULTS ── */
+  #search-results { display: none; padding: 12px 0; }
+  #search-results.visible { display: block; }
+  .result-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .result-item:active { background: var(--surface); }
+  .result-section {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 3px;
+  }
+  .result-text {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+  .result-text mark {
+    background: rgba(240,165,0,0.25);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+  .no-results {
+    text-align: center;
+    color: var(--text3);
+    font-size: 14px;
+    padding: 40px 16px;
+  }
+
+  /* ── BACK TO TOP ── */
+  #back-top {
+    position: fixed;
+    bottom: calc(20px + var(--safe-bottom));
+    right: 16px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(240,165,0,0.4);
+    z-index: 90;
+  }
+  #back-top.visible { display: flex; }
+
+  /* ── SCROLL HIGHLIGHT ── */
+  .highlight-flash {
+    animation: flash 1s ease-out;
+  }
+  @keyframes flash {
+    0%   { background: rgba(240,165,0,0.15); }
+    100% { background: transparent; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-top">
+    <div class="app-title">Grand<span>MA3</span> Reference</div>
+    <button id="toc-btn" onclick="toggleTOC()">
+      Contents <span class="chevron">▼</span>
+    </button>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">&#9906;</span>
+    <input id="search" type="search" placeholder="Search topics, syntax, shortcuts…" oninput="handleSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button id="search-clear" onclick="clearSearch()">✕</button>
+  </div>
+</header>
+
+<!-- TABLE OF CONTENTS -->
+<div id="toc-panel">
+  <div class="toc-inner">
+    <div class="toc-day">Day 1</div>
+    <a class="toc-item" href="#overwrite-merge" onclick="closeTOC()">Overwrite vs. Merge</a>
+    <a class="toc-item" href="#move-black" onclick="closeTOC()">Move Black</a>
+    <a class="toc-item" href="#executor-layout" onclick="closeTOC()">Executor Layout</a>
+    <a class="toc-item" href="#button-functions" onclick="closeTOC()">Button Functions</a>
+    <a class="toc-item" href="#fader-types" onclick="closeTOC()">Fader Types</a>
+    <a class="toc-item" href="#preset-modes" onclick="closeTOC()">Preset Modes</a>
+    <a class="toc-item" href="#update-preset" onclick="closeTOC()">Update a Preset</a>
+    <a class="toc-item" href="#align-tool" onclick="closeTOC()">Align Tool</a>
+    <a class="toc-item" href="#all-pool" onclick="closeTOC()">All Pool</a>
+    <a class="toc-item" href="#program-time" onclick="closeTOC()">Program Time</a>
+    <a class="toc-item" href="#cues-sequences" onclick="closeTOC()">Cues & Sequences</a>
+    <a class="toc-item" href="#trigger-types" onclick="closeTOC()">Trigger Types</a>
+    <a class="toc-item" href="#timing-syntax" onclick="closeTOC()">Timing Syntax</a>
+    <a class="toc-item" href="#store-popup" onclick="closeTOC()">Store Pop-up Options</a>
+    <a class="toc-item" href="#tracking" onclick="closeTOC()">Tracking & Track Sheet</a>
+    <a class="toc-item" href="#copy-cue" onclick="closeTOC()">Copy Cue Modes</a>
+    <a class="toc-item" href="#if-syntax" onclick="closeTOC()">IF Syntax</a>
+    <a class="toc-item" href="#info-window" onclick="closeTOC()">Info Window / Notes</a>
+    <a class="toc-item" href="#dot-syntax" onclick="closeTOC()">Dot Syntax</a>
+    <a class="toc-item" href="#at-copy" onclick="closeTOC()">At Copy</a>
+    <a class="toc-item" href="#self-fix" onclick="closeTOC()">Self Fix Key</a>
+    <a class="toc-item" href="#groups" onclick="closeTOC()">Groups — Storing</a>
+    <a class="toc-item" href="#grid-groups" onclick="closeTOC()">Grid Groups</a>
+    <a class="toc-item" href="#grid-keyword" onclick="closeTOC()">Grid Keyword</a>
+    <a class="toc-item" href="#move-grid-cursor" onclick="closeTOC()">Move Grid Cursor</a>
+    <a class="toc-item" href="#matricks" onclick="closeTOC()">MA tricks Overlay</a>
+    <a class="toc-item" href="#users" onclick="closeTOC()">Users & Profiles</a>
+    <a class="toc-item" href="#desk-lock" onclick="closeTOC()">Desk Lock</a>
+    <a class="toc-item" href="#help-manual" onclick="closeTOC()">Help Manual</a>
+    <a class="toc-item" href="#software-versions" onclick="closeTOC()">Software Versions</a>
+    <a class="toc-item" href="#save-load" onclick="closeTOC()">Saving & Loading Shows</a>
+    <div class="toc-day">Day 2</div>
+    <a class="toc-item" href="#networking" onclick="closeTOC()">Networking Basics</a>
+    <a class="toc-item" href="#network-menu" onclick="closeTOC()">Network Menu</a>
+    <a class="toc-item" href="#session-status" onclick="closeTOC()">Session Status</a>
+    <a class="toc-item" href="#sacn-artnet" onclick="closeTOC()">sACN / ArtNet</a>
+    <a class="toc-item" href="#patch" onclick="closeTOC()">Patch vs. Live Patch</a>
+    <a class="toc-item" href="#patching-fixtures" onclick="closeTOC()">Patching New Fixtures</a>
+    <a class="toc-item" href="#grouping-fixtures" onclick="closeTOC()">Grouping Fixtures</a>
+    <a class="toc-item" href="#park" onclick="closeTOC()">Park</a>
+    <a class="toc-item" href="#phasers" onclick="closeTOC()">Phasers — Overview</a>
+    <a class="toc-item" href="#phaser-window" onclick="closeTOC()">Phaser Window</a>
+    <a class="toc-item" href="#abs-vs-rel" onclick="closeTOC()">Absolute vs. Relative</a>
+    <a class="toc-item" href="#stomp" onclick="closeTOC()">Stomp</a>
+    <a class="toc-item" href="#single-step" onclick="closeTOC()">Single Step Mode</a>
+    <a class="toc-item" href="#matricks-phasers" onclick="closeTOC()">MA tricks with Phasers</a>
+    <a class="toc-item" href="#phaser-tips" onclick="closeTOC()">Phaser Tips & Icons</a>
+    <a class="toc-item" href="#recipes" onclick="closeTOC()">Recipes — Overview</a>
+    <a class="toc-item" href="#recipe-no-sel" onclick="closeTOC()">Recipe Without Selection</a>
+    <a class="toc-item" href="#recipe-sel" onclick="closeTOC()">Recipe With Selection</a>
+    <a class="toc-item" href="#recipes-cues" onclick="closeTOC()">Recipes in Cues</a>
+    <a class="toc-item" href="#cook" onclick="closeTOC()">Cook</a>
+    <a class="toc-item" href="#magic" onclick="closeTOC()">Magic Presets</a>
+    <a class="toc-item" href="#layouts" onclick="closeTOC()">Layouts</a>
+    <a class="toc-item" href="#3d-placement" onclick="closeTOC()">3D Fixture Placement</a>
+    <a class="toc-item" href="#start-show" onclick="closeTOC()">MA Start Show</a>
+    <a class="toc-item" href="#psr" onclick="closeTOC()">Partial Show Read</a>
+    <a class="toc-item" href="#show-creator" onclick="closeTOC()">Show Creator</a>
+    <div class="toc-day">Quick Reference</div>
+    <a class="toc-item" href="#quick-ref" onclick="closeTOC()">All Syntax & Shortcuts</a>
+  </div>
+</div>
+
+<div id="content-wrap">
+<div id="search-results"></div>
+
+<main id="main-content">
+
+<!-- ═══════════════════════════════════════════ DAY 1 -->
+<div class="day-header">
+  <div class="day-label">Day 1</div>
+  <div class="day-title">Sequences, Executors, Presets & Groups</div>
+</div>
+
+<!-- OVERWRITE / MERGE -->
+<div class="section" id="overwrite-merge">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Overwrite vs. Merge</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Option</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Overwrite</td><td>Replaces the existing look entirely with the new look.</td></tr>
+        <tr><td>Merge</td><td>Adds the new look on top of the existing — both coexist in the cue.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- MOVE BLACK -->
+<div class="section" id="move-black">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Move Black</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Allows fixtures to prepare for an upcoming cue during a blackout. Color, gobo, and position changes happen while the light is off. Especially useful in theatrical settings.</p>
+    <p class="body-text">Access: Sequence Sheet → top-right settings toggle → Move Black column.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mode</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-red">None</span></td><td>Fixtures never prepare during dark moments.</td></tr>
+        <tr><td><span class="chip chip-green">Early</span></td><td>Fixtures prepare as soon as they go dark.</td></tr>
+        <tr><td><span class="chip chip-blue">Late</span></td><td>Fixtures wait until the last possible dark moment.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Note:</strong> Cyan cell highlight in track sheet = fixture is preparing. Requires a blackout cue in between. Early and Late behave identically if only one blackout cue exists. Can be set globally or per individual cue.</div>
+  </div>
+</div>
+
+<!-- EXECUTOR LAYOUT -->
+<div class="section" id="executor-layout">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Executor Layout</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td>Wing</td><td>Full fader wing = 15 columns of executors.</td></tr>
+        <tr><td>Bank</td><td>5 executors per bank — small visual gap between each bank.</td></tr>
+        <tr><td>Rows</td><td>Numbered 101 / 201 / 301 …</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- BUTTON FUNCTIONS -->
+<div class="section" id="button-functions">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Executor Button Functions</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Function</th><th>Behavior</th><th>Fader</th><th>Off Cue</th></tr></thead>
+      <tbody>
+        <tr><td>Go+</td><td>Advance sequence</td><td>—</td><td>—</td></tr>
+        <tr><td>Flash</td><td>On while held</td><td>Forces 100%</td><td>No</td></tr>
+        <tr><td>Toggle</td><td>Tap on / off</td><td>—</td><td>—</td></tr>
+        <tr><td>Temp</td><td>On while held</td><td>Respects fader</td><td>Yes</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Flash vs. Temp:</strong> Flash forces 100% and skips the off cue. Temp plays at the current fader level and triggers the off cue on release — so fade-out timing works correctly.</div>
+  </div>
+</div>
+
+<!-- FADER TYPES -->
+<div class="section" id="fader-types">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Fader Types</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Type</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td>Master (MST)</td><td>Puts the sequence on. Doesn't consider playback position.</td></tr>
+        <tr><td>Temp Fader</td><td>Cross-fades the cue on as fader rises, off as it lowers. Great for catwalk-style looks.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- PRESET MODES -->
+<div class="section" id="preset-modes">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Preset Modes</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mode</th><th>Applies To</th><th>Default For</th></tr></thead>
+      <tbody>
+        <tr><td>Selective <span class="chip chip-red">S</span></td><td>Only fixtures used to store it.</td><td>Position</td></tr>
+        <tr><td>Global</td><td>All fixtures with the same fixture profile/mode.</td><td>Color</td></tr>
+        <tr><td>Universal</td><td>All fixtures that have the attribute at all.</td><td>Dimmer</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Note:</strong> To manually change preset mode before storing: long press Store → change Preset Mode at top right → tap pool. To change a pool's default: tap the MA logo in the preset pool header.</div>
+    <div class="note"><strong>Best practice for color presets:</strong> Select one fixture of each type (101 + 201 + 301 + 401), color-correct each visually, then Store/Merge all into one global preset. Avoids Universal's color mismatch problem.</div>
+  </div>
+</div>
+
+<!-- UPDATE PRESET -->
+<div class="section" id="update-preset">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Update a Preset</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Nudge any attribute to activate it → tap Update → tap the navy blue line with the preset name. Auto-saves and exits.</p>
+    <div class="code-block">update preset [number]</div>
+  </div>
+</div>
+
+<!-- ALIGN TOOL -->
+<div class="section" id="align-tool">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Align Tool</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Hard key between the two command screens, or soft key in the encoder bank. Tap once to activate. Deactivates as soon as you touch a second encoder — re-tap to reactivate.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mode (tap to cycle)</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td>Align / Go</td><td>Fan symmetrically from center</td></tr>
+        <tr><td>Arrow left</td><td>Left fixture fixed, right moves freely</td></tr>
+        <tr><td>Arrow right</td><td>Right fixture fixed, left moves freely</td></tr>
+        <tr><td>Arrows inward →←</td><td>Outermost move freely, innermost stay</td></tr>
+        <tr><td>Arrows outward ←→</td><td>Innermost move freely, outermost stay</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Color tip:</strong> Works with color too — open the CIE gradient tab, tap Align, drag horizontally for a color spread. Mirrored arrow mode = color "wings" effect.</div>
+  </div>
+</div>
+
+<!-- ALL POOL -->
+<div class="section" id="all-pool">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">All Pool</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Stores every currently active attribute with no filtering — dimmer, color, position, all at once. Found underneath the color picker in the special dialog window on the first screen.</p>
+    <p class="body-text">Tick-mark bar at the bottom shows which feature groups are stored. Gray bar under S = dimmer level.</p>
+  </div>
+</div>
+
+<!-- PROGRAM TIME -->
+<div class="section" id="program-time">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Program Time</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Far right of encoder bar next to MA tricks overlay. Tap "Prog Time" label at top of fader to enable. All preset taps and dimmer changes fade to the value over the set time instead of snapping. Good for busking.</p>
+  </div>
+</div>
+
+<!-- CUES AND SEQUENCES -->
+<div class="section" id="cues-sequences">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Cues and Sequences</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Concept</th><th>Explanation</th></tr></thead>
+      <tbody>
+        <tr><td>Sequences live in the pool</td><td>Not on the executor. Delete the executor and the sequence still exists. Executor is just a handle.</td></tr>
+        <tr><td>Select a sequence</td><td>Tap Select key → tap its executor. Yellow box = selected in pool.</td></tr>
+        <tr><td>Store to selected sequence</td><td>Once selected, Store → Please stores directly without tapping the executor again.</td></tr>
+        <tr><td>Playback values in fixture sheet</td><td>Values in yellow with a sine-wave underline = coming from playback.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- TRIGGER TYPES -->
+<div class="section" id="trigger-types">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Trigger Types</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Type</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td>Go</td><td>Only advances when you manually press Go.</td></tr>
+        <tr><td>Follow</td><td>After cue finishes, counts down trigger time, then auto-fires next cue.</td></tr>
+        <tr><td>Time</td><td>As soon as Go is pressed, countdown starts immediately — doesn't wait for current cue to finish.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Delay vs. trigger time:</strong> Trigger time controls WHEN the cue fires. Delay controls how long after firing before the fade begins.</div>
+  </div>
+</div>
+
+<!-- TIMING SYNTAX -->
+<div class="section" id="timing-syntax">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Timing Syntax</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Set fade and delay on a cue from the command line:</p>
+    <div class="code-block">time 3 time 1 cue 3<br>→ 3-second fade, 1-second delay on cue 3</div>
+  </div>
+</div>
+
+<!-- STORE POPUP -->
+<div class="section" id="store-popup">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Store Pop-up Options</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Option</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Overwrite</td><td>Discards all existing cue data and replaces with new.</td></tr>
+        <tr><td>Merge</td><td>Keeps existing cue data and adds new values at higher priority.</td></tr>
+        <tr><td>Remove</td><td>Removes active attributes from cue — back to default, no values stored.</td></tr>
+        <tr><td>Release</td><td>Gives those attributes a release value so another cue at the same priority can take control.</td></tr>
+        <tr><td>Create cue</td><td>Adds a new cue to the sequence.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="warn"><strong>Remove vs. Release:</strong> Remove kills the attribute entirely. Release lets it exist at the value but hands priority to other sequences. Easy to accidentally hit the wrong one.</div>
+  </div>
+</div>
+
+<!-- TRACKING -->
+<div class="section" id="tracking">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Tracking & Track Sheet Colors</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Tracking = a fixture stays in whatever state it was last told until explicitly changed. Values track forward through the sequence until overwritten.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Color</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-blue">Cyan</span></td><td>Stored in this cue (dimmer going up)</td></tr>
+        <tr><td><span style="display:inline-block;background:rgba(200,60,150,0.2);color:#d580b0;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">Magenta</span></td><td>Tracked from a previous cue — NOT stored here</td></tr>
+        <tr><td><span class="chip chip-green">Green</span></td><td>Stored in this cue (dimmer going down)</td></tr>
+        <tr><td><span style="display:inline-block;background:rgba(200,200,200,0.1);color:#ccc;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">White</span></td><td>Stored at the same value as the previous cue</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Queue Only:</strong> Choose from the pop-up when storing to keep a blackout contained to just that cue. If you accidentally track a blackout: Update → expand options in yellow header → change to "Add New Content" → tap navy line.</div>
+  </div>
+</div>
+
+<!-- COPY CUE -->
+<div class="section" id="copy-cue">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Copy Cue Modes</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="code-block">copy cue 3 at cue 6 please → choose Content or Status</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mode</th><th>What it copies</th></tr></thead>
+      <tbody>
+        <tr><td>Content</td><td>Only values actually stored in the source cue. Tracked values NOT included.</td></tr>
+        <tr><td>Status</td><td>Values stored PLUS everything tracked into the cue — copies the full look.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- IF SYNTAX -->
+<div class="section" id="if-syntax">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">IF Syntax</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Selects everything currently outputting — then put those at zero and store a blackout that only affects what's on:</p>
+    <div class="code-block">if → please</div>
+  </div>
+</div>
+
+<!-- INFO WINDOW -->
+<div class="section" id="info-window">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Info Window / Notes</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Open from the More tab (after Help). Set "Link Type" to Selected Sequence and "Window Mode" to Current Queue. Notes from the cue's notes column display in real time as you advance through the sequence.</p>
+    <p class="body-text">Find the Notes column by scrolling all the way right in the sequence sheet (two-finger scroll).</p>
+  </div>
+</div>
+
+<!-- DOT SYNTAX -->
+<div class="section" id="dot-syntax">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Fixture Selection — Dot Syntax</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Syntax</th><th>Selects</th></tr></thead>
+      <tbody>
+        <tr><td><code>301</code></td><td>Parent fixture only</td></tr>
+        <tr><td><code>301.</code></td><td>Parent + all sub-fixtures (pixels)</td></tr>
+        <tr><td><code>through.</code></td><td>Every fixture + all sub-fixtures in show</td></tr>
+        <tr><td><code>through</code></td><td>All parents only — ignores pixels</td></tr>
+        <tr><td><code>701 + 215.</code></td><td>Those fixtures and all their children</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- AT COPY -->
+<div class="section" id="at-copy">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">At Copy — Fixture at Fixture</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Copies values from one set of fixtures to another. The word "fixture" before the source is required — without it the console assumes a dimmer value.</p>
+    <div class="code-block">fixture 113 through 124 at fixture 101 through 112 please</div>
+    <p class="body-text">Mirror — reverse the source range to flip the look:</p>
+    <div class="code-block">fixture 107 through 112 at fixture 106 through 101 please</div>
+  </div>
+</div>
+
+<!-- SELF FIX -->
+<div class="section" id="self-fix">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Self Fix Key</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Action</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Self Fix → tap preset</td><td>Selects all fixtures used to store that preset, then applies it.</td></tr>
+        <tr><td>Self Fix → tap cue/sequence</td><td>Selects all fixtures used in that cue/sequence.</td></tr>
+        <tr><td>Double-tap Self Fix</td><td>Puts Shuffle in command line — tap a group to shuffle fixture order.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="warn"><strong>Warning:</strong> Do NOT double-tap a group. This activates ALL attributes including control channels and stores zeros everywhere — silently wrecks tracking throughout your show.</div>
+  </div>
+</div>
+
+<!-- GROUPS -->
+<div class="section" id="groups">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Groups — Storing</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Select fixtures → Store → tap group pool object.</p>
+    <p class="body-text"><strong>Swipey gesture:</strong> tap and immediately drag (no hold) on the pool object → slide to Store → release. Same gesture works for Label.</p>
+    <p class="body-text"><strong>Appearances pool</strong> (right of groups view): swipe on a color appearance → release on Assign → tap the group.</p>
+  </div>
+</div>
+
+<!-- GRID GROUPS -->
+<div class="section" id="grid-groups">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Grid Groups — Blue Box Method</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Blue box shows where the next fixture will land in the selection grid. Tap to move it, then type the next fixture number.</p>
+    <p class="body-text">Setup toggle (top right of selection grid) lets you tap and drag fixtures to rearrange after placing.</p>
+  </div>
+</div>
+
+<!-- GRID KEYWORD -->
+<div class="section" id="grid-keyword">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Grid Keyword</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Creates a grid of empty slots. X key 3 puts "grid" in the command line. Format is X/Y (or X/Y/Z for 3D).</p>
+    <div class="code-block">grid 0/0 through 19/19 please<br>→ creates 20×20 grid</div>
+    <div class="code-block">401 through 800 please<br>→ fills the grid with those fixtures</div>
+  </div>
+</div>
+
+<!-- MOVE GRID CURSOR -->
+<div class="section" id="move-grid-cursor">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Move Grid Cursor Modes</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mode</th><th>Blue box behavior</th></tr></thead>
+      <tbody>
+        <tr><td>Append X</td><td>Moves right after each fixture entry</td></tr>
+        <tr><td>New Line</td><td>Moves down after each fixture entry</td></tr>
+        <tr><td>None</td><td>Stacks all fixtures in the same grid spot</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- MA TRICKS -->
+<div class="section" id="matricks">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">MA tricks Overlay</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Opened from the encoder bar. Reset button (top right) clears all settings without clearing your fixture selection.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Tool</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>X blocks</td><td>Groups fixtures into paired grid points (e.g., X blocks 2 = groups of 2).</td></tr>
+        <tr><td>X wings</td><td>Fans from outside in — outermost share a point, works toward center.</td></tr>
+        <tr><td>X groups</td><td>Separates evens/odds (or thirds, quarters…) into distinct grid points.</td></tr>
+        <tr><td>X shuffle</td><td>Shuffles fixture order in selection grid only — does NOT change output.</td></tr>
+        <tr><td>X shift</td><td>Circular shift — loops fixtures through the selection (MA2 "circular copy").</td></tr>
+        <tr><td>Mirror (transform)</td><td>Makes the phaser symmetrical — not the same as X wings.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>MA tricks pool:</strong> Store a configuration as a pool object so you don't have to re-open the overlay each time. Tap to apply. MA tricks stack — they don't override each other. Always reset between applying different ones.</div>
+    <div class="note"><strong>Pre-defined MA tricks:</strong> Menu → Show Creator → MA tricks → select all → Import.</div>
+    <div class="note"><strong>Quick gradient shuffle:</strong> set gradient (at 0 through 100) → open MA tricks → Copy Selection → Shuffle → Copy Values.</div>
+  </div>
+</div>
+
+<!-- USERS -->
+<div class="section" id="users">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Users & User Profiles</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Term</th><th>Explanation</th></tr></thead>
+      <tbody>
+        <tr><td>User</td><td>Controls rights and screen config. Multiple users can reference the same profile.</td></tr>
+        <tr><td>User profile</td><td>The "glasses" — holds programmer content, display preferences, oops confirmation, etc.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="body-text">Two-finger tap (fingers ~1 inch apart) to edit cells. Long press also opens a dialog.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Rights level</th><th>Typical use</th></tr></thead>
+      <tbody>
+        <tr><td>Admin</td><td>Full access</td></tr>
+        <tr><td>Setup</td><td>Hardware/config access</td></tr>
+        <tr><td>App</td><td>Programming access</td></tr>
+        <tr><td>Playback</td><td>Board op / volunteer</td></tr>
+        <tr><td>View</td><td>Stage manager, read-only</td></tr>
+        <tr><td>None</td><td>Discreet desk lock</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Login syntax:</strong> <code>login admin please</code><br>Clear all user profile programmer data: <code>off user profile through</code></div>
+  </div>
+</div>
+
+<!-- DESK LOCK -->
+<div class="section" id="desk-lock">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Desk Lock</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text"><strong>Lock:</strong> Control bar → Power icon → Padlock icon.</p>
+    <p class="body-text"><strong>Unlock:</strong> Open keyboard drawer → tap Pause button at top right of keyboard.</p>
+    <p class="body-text"><strong>Hard key:</strong> Both MA buttons + small Pause button simultaneously.</p>
+  </div>
+</div>
+
+<!-- HELP MANUAL -->
+<div class="section" id="help-manual">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Help Manual</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Method</th><th>Opens</th></tr></thead>
+      <tbody>
+        <tr><td>Help → Please</td><td>General help overlay</td></tr>
+        <tr><td>Help → tap any window</td><td>Help for that specific window</td></tr>
+        <tr><td>Double-tap Help</td><td>Re-opens last thing you searched</td></tr>
+        <tr><td><code>help [keyword] please</code></td><td>Direct keyword search via command line</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- SOFTWARE VERSIONS -->
+<div class="section" id="software-versions">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Software Versions</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Format: Major.Minor.Streaming.BugFix. Cannot load a show saved in a newer version on an older console. Can load older files into newer software.</p>
+    <div class="warn"><strong>Do not update mid-show-run.</strong> Even a bug fix version can break something you relied on. Migrate very old files stepwise through each version — don't jump from 1.4 to 2.3 directly.</div>
+  </div>
+</div>
+
+<!-- SAVE / LOAD -->
+<div class="section" id="save-load">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Saving & Loading Shows</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">USB file path: <code>grandMA3/shared/shows</code></p>
+    <p class="body-text">Load: Menu → Backup → Load → select USB → tap show → Check All → Load → Do Not Save.</p>
+    <div class="note"><strong>Keep existing DMX/network config:</strong> Uncheck DMX Ports and DMX Protocols when loading. It keeps what you already have — does NOT revert to default.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ DAY 2 -->
+<div class="day-header">
+  <div class="day-label">Day 2</div>
+  <div class="day-title">Networking, Phasers, Recipes, Magic & Layouts</div>
+</div>
+
+<!-- NETWORKING -->
+<div class="section" id="networking">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Networking Basics</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">An IP address is made of four octets (0–255 each). Think: octet 1 = state, 2 = town, 3 = street, 4 = house. The subnet mask defines which addresses can talk to each other — 255 locks that octet, 0 allows it to change.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Subnet Mask</th><th>What can change</th><th>Range</th></tr></thead>
+      <tbody>
+        <tr><td>255.0.0.0</td><td>Last three octets</td><td>Broadest</td></tr>
+        <tr><td>255.255.0.0</td><td>Last two octets</td><td>Medium</td></tr>
+        <tr><td>255.255.255.0</td><td>Last octet only</td><td>Tightest — max 254 devices</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>ArtNet note:</strong> Defaults to 2.x.x.x range — cannot have a gateway, causes conflicts with internet traffic. Default to sACN when possible.</div>
+  </div>
+</div>
+
+<!-- NETWORK MENU -->
+<div class="section" id="network-menu">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Network Menu</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Menu → Network. My Interfaces button (top right): edit IP addresses and subnet masks per physical port.</p>
+    <div class="warn"><strong>Warning:</strong> Hard keys do NOT work while the My Interfaces window is open — it locks the rest of the console. Set DHCP to No before editing IP. Press Apply Changes when done.</div>
+    <p class="body-text">MA net interface (bottom): selects which physical port MA sends out of. Cannot be changed while in session. Tap the big red power button to end/create a session.</p>
+  </div>
+</div>
+
+<!-- SESSION STATUS -->
+<div class="section" id="session-status">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Session Status Types</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Status</th><th>Indicator</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Standalone</td><td><span class="chip chip-red">Red tree</span></td><td>Completely off network. Blocks ALL protocols.</td></tr>
+        <tr><td>Idle Master</td><td><span style="background:rgba(150,150,150,0.2);color:#aaa;display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">Gray tree</span></td><td>In session alone — others can join. Must be here to send/receive any protocol.</td></tr>
+        <tr><td>Global Master</td><td><span class="chip chip-blue">Blue tree</span></td><td>Master of a multi-desk session.</td></tr>
+        <tr><td>Connected</td><td><span class="chip chip-green">Green tree</span></td><td>Invited into and in session with a global master.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- SACN / ARTNET -->
+<div class="section" id="sacn-artnet">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">sACN / ArtNet Settings</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Menu → DMX Protocols → choose sACN or ArtNet from left side.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Interface toggle</td><td>Chooses which physical port (con 1/2/3) to send out of.</td></tr>
+        <tr><td>Enable Output</td><td>Must be ON to send sACN.</td></tr>
+        <tr><td>Send sACN if Idle Master</td><td>Must be ON when running a show without other MA desks in session.</td></tr>
+        <tr><td>Local Universe</td><td>Where fixtures are patched inside MA — the starting universe in MA. Not an amount.</td></tr>
+        <tr><td>sACN Universe</td><td>What universe the external node is expecting data on.</td></tr>
+        <tr><td>Amount</td><td>How many universes you are sending.</td></tr>
+        <tr><td>Priority</td><td>sACN only (ArtNet has no priority). Higher priority wins in a DMX merge.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Local start example:</strong> If fixtures are patched starting at universe 5 in MA, local start = 5. If your first four universes are house lights on physical DMX ports, sACN rig starts at universe 5.</div>
+  </div>
+</div>
+
+<!-- PATCH -->
+<div class="section" id="patch">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Patch vs. Live Patch</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mode</th><th>Changes allowed</th><th>Resync?</th></tr></thead>
+      <tbody>
+        <tr><td>Patch</td><td>Add/delete fixtures, change types, all major changes.</td><td>Yes — interrupts network users briefly.</td></tr>
+        <tr><td>Live Patch</td><td>Rename, change DMX addresses, invert pan/tilt only.</td><td>No — safe in multi-user environments.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- PATCHING FIXTURES -->
+<div class="section" id="patching-fixtures">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Patching New Fixtures</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Menu → Patch → tap "new fixture" at the bottom of the list → Insert New Fixture → Library tab.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Library icon</th><th>What it shows</th></tr></thead>
+      <tbody>
+        <tr><td>MA logo</td><td>Internal library — factory profiles.</td></tr>
+        <tr><td>Person icon</td><td>User-created profiles stored on internal drive.</td></tr>
+        <tr><td>Globe (grayed)</td><td>GDTf Share world server — requires internet.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="body-text">After selecting a fixture type, set: Mode, Quantity, Fixture ID (FID), and Patch address (e.g., <code>1.001</code> or <code>1.1</code>).</p>
+    <div class="note"><strong>Parameters vs. DMX channels:</strong> Parameters = attributes (pan, tilt, dimmer = 3 parameters). DMX channels account for bit depth (pan + pan fine = 2 channels but 1 parameter). MA3 output licensing is based on parameters, not DMX channels.</div>
+  </div>
+</div>
+
+<!-- GROUPING FIXTURES -->
+<div class="section" id="grouping-fixtures">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Grouping Fixtures (Patch Folders)</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Folder containers in patch — not groups in the programming sense. Found in show library under Generic → Grouping. No DMX address needed.</p>
+    <p class="body-text">To add fixtures: cut (not copy) fixtures from patch list → tap "new fixture" cell inside grouping fixture → paste → choose Absolute.</p>
+    <div class="note"><strong>Best practice:</strong> Use groups for programming, use grouping fixtures for patch organization only.</div>
+  </div>
+</div>
+
+<!-- PARK -->
+<div class="section" id="park">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Park</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Pauses output of specific DMX addresses exactly where they are. Cannot be overridden by cues or the programmer until unparked.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Action</th><th>How</th></tr></thead>
+      <tbody>
+        <tr><td>Get Park in command line</td><td>Double-tap small Pause key (under X key 9)</td></tr>
+        <tr><td>Get Unpark in command line</td><td>Double-tap small Go+ button (under X key 11)</td></tr>
+        <tr><td>Park a full fixture</td><td><code>park 101 please</code></td></tr>
+        <tr><td>Park a specific attribute</td><td>park → tap feature group on encoder bank</td></tr>
+        <tr><td>Unpark entire universe</td><td>unpark → hold MA + tap X8 → through please</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Real world uses:</strong> House lights at a set level during tech, parking relays open/closed, a work light for notes, a practical that must stay on.</div>
+  </div>
+</div>
+
+<!-- PHASERS OVERVIEW -->
+<div class="section" id="phasers">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Phasers — Overview</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">A phaser is a multi-step preset. Every preset starts on step 1 — a phaser continues from there. Create a step by pressing the right arrow (→) in the step bar on the encoder bar.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Encoder bar layer</th><th>What it controls</th></tr></thead>
+      <tbody>
+        <tr><td>Values</td><td>Attribute values per step</td></tr>
+        <tr><td>Timing</td><td>Fade/delay per step</td></tr>
+        <tr><td>Phaser Overall</td><td>Applies to entire loop — speed and phase. Cannot be per-step.</td></tr>
+        <tr><td>Phaser Steps</td><td>Per-step: acceleration, deceleration, transition, width.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Width vs. Speed:</strong> Speed (Phaser Overall) applies to the whole loop. Width (Phaser Steps) controls how long/short a specific step is — use width when you need different timing per step. Transition = 0 means instant snap.</div>
+  </div>
+</div>
+
+<!-- PHASER WINDOW -->
+<div class="section" id="phaser-window">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Phaser Window & Toolbar</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>View</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td>1D</td><td>Seeing the waveform shape</td></tr>
+        <tr><td>2D</td><td>Aerial grid — best for building position phasers</td></tr>
+        <tr><td>Sheet</td><td>Table of all values per step — see which presets are in which step</td></tr>
+      </tbody>
+    </table></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Toolbar tool</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>A+ tool</td><td>Adds an absolute step — tap in 2D grid to place a point</td></tr>
+        <tr><td>R+ tool</td><td>Adds a relative step</td></tr>
+        <tr><td>Move tool</td><td>Moves existing points in 2D grid</td></tr>
+        <tr><td>Lightning bolt</td><td>Predefined forms: sine, ramp, square, circle, etc.</td></tr>
+        <tr><td>Phase tool (top left)</td><td>Sets phase spread — e.g., choose 360 to spread across the loop</td></tr>
+        <tr><td>Size tool (bottom left)</td><td>Resize the shape — use with All Steps selected</td></tr>
+        <tr><td>All Steps toggle</td><td>Makes toolbar actions affect all steps simultaneously</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Phase (0–360):</strong> Without phase, all fixtures do the same thing at once. With 360°, fixtures are evenly spread across the loop — creating a chase.</div>
+  </div>
+</div>
+
+<!-- ABS VS REL -->
+<div class="section" id="abs-vs-rel">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Absolute vs. Relative Phasers</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Type</th><th>Behavior</th><th>What stops it</th></tr></thead>
+      <tbody>
+        <tr><td>Absolute</td><td>Built on the absolute layer — defines exact values.</td><td>Another absolute preset or phaser on the same attribute.</td></tr>
+        <tr><td>Relative</td><td>Built on the relative layer — runs relative to whatever absolute anchor is applied.</td><td>Only stopped by a relative static preset or Stomp.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Why this matters:</strong> Apply an absolute position preset (the anchor) and a relative circle phaser (the movement) — the circle moves with each new position preset without stopping. This is what makes the singer/guitarist/bassist workflow possible.</div>
+  </div>
+</div>
+
+<!-- STOMP -->
+<div class="section" id="stomp">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Stomp</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Knocks in the last outputted single-step value from any layer, stopping a phaser and holding fixtures at their last static position. Stomp key is between the two command screens.</p>
+    <div class="code-block">stomp → tap position encoder bank<br>→ stops position phaser, holds last position</div>
+  </div>
+</div>
+
+<!-- SINGLE STEP -->
+<div class="section" id="single-step">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Single Step Mode</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Toggle in the encoder bar (left side near Align). Pauses the phaser's stepping so you can see and edit each step individually. Use left/right arrows to navigate. Tap again to disable.</p>
+    <p class="body-text"><strong>X5 key color phaser shortcut:</strong> Hold X5 and tap multiple color presets in sequence — automatically creates a multi-step color phaser. Only works with presets, not the raw color picker.</p>
+    <p class="body-text"><strong>Integrate command:</strong> When in step 1 of an existing phaser, tapping a preset normally overwrites it. To add to step 1 instead: hold MA + tap At → Integrate in command line → tap the preset.</p>
+  </div>
+</div>
+
+<!-- MA TRICKS WITH PHASERS -->
+<div class="section" id="matricks-phasers">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">MA tricks with Phasers</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Combination</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>Phase X 360 + X wings 2</td><td>Wings chase fanning from outside in</td></tr>
+        <tr><td>Phase X 360 + X groups 2</td><td>Odds/evens chase</td></tr>
+        <tr><td>Phase X 360 + Mirror</td><td>Fully symmetrical effect</td></tr>
+        <tr><td>Phase X 360 + Phase Y 360 + Y wings 2</td><td>Grid effect using both axes — great for LED walls</td></tr>
+        <tr><td>Shuffle</td><td>Randomizes fixture order for a scatter effect</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Swap phase</strong> (new in v2.2): reverses phase direction — left-to-right becomes right-to-left.</div>
+  </div>
+</div>
+
+<!-- PHASER TIPS -->
+<div class="section" id="phaser-tips">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Phaser Tips & Icons</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Icon on preset</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Three tiny purple dots</td><td>Phaser values stored inside</td></tr>
+        <tr><td>Green grid icon</td><td>MA tricks stored inside</td></tr>
+        <tr><td>Green cooking pot</td><td>Preset or cue has been cooked</td></tr>
+        <tr><td>Pink line</td><td>Relative values stored inside</td></tr>
+        <tr><td>Small blue number</td><td>How many fixtures currently reference that preset</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Best practice:</strong> Store each attribute's phaser separately (dimmer, position, color). Combine them as needed. Much easier to edit individual attributes later.</div>
+    <div class="note"><strong>Pre-defined phasers:</strong> Menu → Show Creator → Presets → All Pool → "All" tab → "Predefined Phaser" → Import.</div>
+  </div>
+</div>
+
+<!-- RECIPES OVERVIEW -->
+<div class="section" id="recipes">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Recipes — Overview</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">A recipe has three ingredients: <strong>Selection</strong> (which fixtures — a group), <strong>Value</strong> (what value — a preset), and <strong>MA tricks</strong> (how to apply the values).</p>
+    <p class="body-text">Recipes are a different workflow, not a different feature — they can live in presets or in cues. They allow you to update an entire look instantly by changing just the selection or value.</p>
+  </div>
+</div>
+
+<!-- RECIPE WITHOUT SELECTION -->
+<div class="section" id="recipe-no-sel">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Recipe Preset — Without Selection</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Acts like a template effect from MA2. Any group you apply it to gets the effect.</p>
+    <p class="body-text"><strong>How to make:</strong> Store a phaser → swipe on empty preset in pool → Edit Setting → Turn Into Recipe → leave selection empty → edit value cell (choose the phaser) → set MA tricks (e.g., phase X = 360) → label → escape.</p>
+    <p class="body-text">Apply by tapping the recipe with any group selected.</p>
+  </div>
+</div>
+
+<!-- RECIPE WITH SELECTION -->
+<div class="section" id="recipe-sel">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Recipe Preset — With Selection</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Always applies to the specific group stored in it — not the currently selected fixtures.</p>
+    <p class="body-text"><strong>How to make:</strong> Create a group → swipe on empty preset → Edit Setting → Turn Into Recipe → set selection to your group → set value (preset) → set MA tricks → escape. Double-tap to apply.</p>
+    <div class="note"><strong>Key benefit:</strong> Add more fixtures to the group later and the recipe automatically includes them — great for touring where rig size changes per venue.</div>
+  </div>
+</div>
+
+<!-- RECIPES IN CUES -->
+<div class="section" id="recipes-cues">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Recipes in Cues</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">In the sequence sheet: tap MA logo → Mask tab → enable Show Recipes. Recipe lines appear at the bottom. Long press "New Recipe" cell to add a line.</p>
+    <p class="body-text">Set selection (group) and value (preset) in the cells. Set Phase to X in the far-right cells.</p>
+    <div class="note"><strong>Quick update trick:</strong> Lasso multiple selection cells → change to a new group — updates all recipe lines at once. Much faster than rebuilding a cue.</div>
+  </div>
+</div>
+
+<!-- COOK -->
+<div class="section" id="cook">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Cook</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Used when conflicting values exist — e.g., a hard programmer value says 100%, a recipe line says 50%. Cooking takes the recipe value.</p>
+    <p class="body-text">A green cooking pot icon appears on any preset or cue that has been cooked.</p>
+  </div>
+</div>
+
+<!-- MAGIC PRESETS -->
+<div class="section" id="magic">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Magic Presets</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Define specific endpoints (A, B, and optionally midpoints) and the console dynamically spreads all selected fixtures across those points. Identified by a green wizard hat icon.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Type</th><th>How to make</th></tr></thead>
+      <tbody>
+        <tr><td>2-point magic</td><td>Select 2 fixtures → set each to different values → tap Set → Store as preset → swipe → Edit Setting → tap Magic toggle (top left) → escape.</td></tr>
+        <tr><td>3-point magic</td><td>Same with 3 fixtures — middle point determines arc height.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Best practice workflow:</strong> Use magic to build a position look (e.g., straight apron, cross, fan), then store those positions as regular selective presets. Magic builds them, presets recall them.</div>
+    <div class="note"><strong>Fixture-type specific:</strong> A separate magic preset is needed for each fixture type.</div>
+  </div>
+</div>
+
+<!-- LAYOUTS -->
+<div class="section" id="layouts">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Layouts</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">A 2D sandbox to freely arrange fixtures, groups, presets, sequences, and other objects. In MA3, objects are assigned to layouts (not stored like in MA2).</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Action</th><th>How</th></tr></thead>
+      <tbody>
+        <tr><td>Assign fixtures</td><td>Select fixtures → tap Assign key → tap anywhere in the gray canvas.</td></tr>
+        <tr><td>Move objects</td><td>Enable Setup (top right) → lasso → tap and drag.</td></tr>
+        <tr><td>Auto-place from 3D</td><td>Setup enabled → encoder bar → Arrangement → Layout Type → Camera → scroll to "2D Top" → Apply.</td></tr>
+        <tr><td>Add custom element</td><td>Setup → + tool → draw box → Edit → tap inside → tap Object field → choose type.</td></tr>
+        <tr><td>Set action on element</td><td>Edit → tap object → set action (Go+, Flash, Toggle, etc.).</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><strong>Multiple actions:</strong> You can have multiple copies of the same sequence in a layout, each set to a different action (Flash, Toggle, Go+, etc.).</div>
+  </div>
+</div>
+
+<!-- 3D PLACEMENT -->
+<div class="section" id="3d-placement">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3D Fixture Placement in Setup</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">With Setup enabled in the 3D viewer, encoder bar shows Position/Rotation/X/Y/Z encoders. Change function to Arrangement to access layout types.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Layout type</th><th>Settings</th></tr></thead>
+      <tbody>
+        <tr><td>Line</td><td>Positions fixtures in a straight line.</td></tr>
+        <tr><td>Grid</td><td>Set columns, rows, column interval, row interval → press Apply (above 4th encoder).</td></tr>
+        <tr><td>Circle</td><td>Set radius start, angle start (−90 = top), angle range (180 = semicircle) → Apply → change Axis Group (XY to XZ) → Apply again.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- START SHOW -->
+<div class="section" id="start-show">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">MA Start Show</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Built-in busking show file included with every MA3 installation. Everything is built using recipes and macros. Good for last-minute gigs or as a base template.</p>
+    <p class="body-text">Load via: double-tap the orange macro (5001) → follow the prompts to store groups and position presets.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Group number</th><th>What to store</th></tr></thead>
+      <tbody>
+        <tr><td>1, 2, 3</td><td>Gridded groups — one per fixture type (X width = half fixture count)</td></tr>
+        <tr><td>19, 20, 21</td><td>Linear groups — one per fixture type</td></tr>
+        <tr><td>37, 38, 39</td><td>Odd-numbered fixtures (X groups = 2 → tap Next)</td></tr>
+        <tr><td>55, 56, 57</td><td>Even-numbered fixtures (X groups = 2 → tap Next again)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="warn"><strong>Always merge when storing to Start Show groups — never overwrite.</strong> The groups are already referenced in recipes, and overwriting breaks those references.</div>
+    <p class="body-text">LOS layout (bottom of start show view bar): pre-built layout for X key hit buttons. Select group → set dimmer, position, color, fade and delay → tap and hold X3 / X4 to assign.</p>
+  </div>
+</div>
+
+<!-- PSR -->
+<div class="section" id="psr">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Partial Show Read (PSR)</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Found at the bottom left of the Load menu. Brings specific elements from one show file into another — much more targeted than a full show load. Best way to import your patch into a fresh show like the Start Show.</p>
+  </div>
+</div>
+
+<!-- SHOW CREATOR -->
+<div class="section" id="show-creator">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Show Creator</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="body-text">Menu → Show Creator. Imports predefined objects directly into your show.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Object type</th><th>What you get</th></tr></thead>
+      <tbody>
+        <tr><td>MA tricks</td><td>All factory MA tricks presets — select all → Import next to your MA tricks pool.</td></tr>
+        <tr><td>Predefined Phaser</td><td>Presets → All Pool → "All" tab → "Predefined Phaser" → Import. All factory dimmer, position, and color phasers.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ QUICK REF -->
+<div class="day-header" id="quick-ref">
+  <div class="day-label">Quick Reference</div>
+  <div class="day-title">All Syntax & Shortcuts</div>
+</div>
+
+<div class="section" id="quick-ref-section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">Complete Command & Shortcut List</span>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Action</th><th>Syntax / How</th></tr></thead>
+      <tbody>
+        <tr><td>Go to page 2</td><td><code>Page+</code></td></tr>
+        <tr><td>Off menu (kill all sequences)</td><td>Double-tap Off key</td></tr>
+        <tr><td>Quick save</td><td>Menu key → Quick Save</td></tr>
+        <tr><td>Set fade + delay on a cue</td><td><code>time 3 time 1 cue 3</code></td></tr>
+        <tr><td>Select currently outputting fixtures</td><td><code>if → please</code></td></tr>
+        <tr><td>Copy a cue</td><td><code>copy cue 3 at cue 6 please</code></td></tr>
+        <tr><td>Fixture at fixture (copy values)</td><td><code>fixture 113 through 124 at fixture 101 through 112 please</code></td></tr>
+        <tr><td>Mirror fixture values</td><td><code>fixture 107 through 112 at fixture 106 through 101 please</code></td></tr>
+        <tr><td>Select parent + all children</td><td><code>301. please</code></td></tr>
+        <tr><td>Select all fixtures + sub-fixtures</td><td><code>through. please</code></td></tr>
+        <tr><td>Create a grid of empty slots</td><td><code>grid 0/0 through 19/19 please</code></td></tr>
+        <tr><td>Shuffle selection</td><td>Double-tap Self Fix → tap group</td></tr>
+        <tr><td>Integrate preset into step 1</td><td>Hold MA + tap At → tap preset</td></tr>
+        <tr><td>Stomp a phaser</td><td>Stomp key → tap encoder bank</td></tr>
+        <tr><td>Color phaser from presets</td><td>Hold X5 → tap presets → release</td></tr>
+        <tr><td>Park a fixture</td><td>Double-tap Pause (X key 9) → <code>park 101 please</code></td></tr>
+        <tr><td>Unpark a fixture</td><td>Double-tap Go+ (X key 11) → <code>unpark 101 please</code></td></tr>
+        <tr><td>Unpark entire universe</td><td>unpark → hold MA + tap X8 → <code>through please</code></td></tr>
+        <tr><td>Update a preset</td><td>Nudge attribute → tap Update → tap navy line</td></tr>
+        <tr><td>Login</td><td><code>login admin please</code></td></tr>
+        <tr><td>Clear all user profile data</td><td><code>off user profile through</code></td></tr>
+        <tr><td>Search help manual</td><td><code>help [keyword] please</code></td></tr>
+        <tr><td>Assign executor options</td><td>Assign → tap executor</td></tr>
+        <tr><td>Store to selected sequence</td><td>Store → Please</td></tr>
+        <tr><td>Swipey gesture (store/label)</td><td>Tap + immediately drag on pool object → slide to target</td></tr>
+        <tr><td>Desk lock</td><td>Control bar → Power icon → Padlock</td></tr>
+        <tr><td>Desk unlock</td><td>Keyboard drawer → Pause button (top right)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+</main>
+</div><!-- end content-wrap -->
+
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── SECTION TOGGLE
+function toggleSection(header) {
+  const section = header.parentElement;
+  section.classList.toggle('open');
+}
+
+// ── TOC TOGGLE
+function toggleTOC() {
+  const panel = document.getElementById('toc-panel');
+  const btn = document.getElementById('toc-btn');
+  panel.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+function closeTOC() {
+  document.getElementById('toc-panel').classList.remove('open');
+  document.getElementById('toc-btn').classList.remove('open');
+  // small delay so the anchor jump happens after close
+  setTimeout(() => {}, 100);
+}
+
+// ── BACK TO TOP
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('back-top');
+  btn.classList.toggle('visible', window.scrollY > 400);
+});
+
+// ── SEARCH
+const searchData = [];
+
+function buildSearchIndex() {
+  document.querySelectorAll('.section').forEach(section => {
+    const titleEl = section.querySelector('.section-title');
+    const bodyEl = section.querySelector('.section-body');
+    if (!titleEl || !bodyEl) return;
+    const title = titleEl.textContent.trim();
+    const id = section.id;
+    const items = [];
+
+    // tables
+    bodyEl.querySelectorAll('tr').forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length >= 2) {
+        items.push({ text: Array.from(cells).map(c => c.textContent).join(' — '), el: row });
+      }
+    });
+    // code blocks
+    bodyEl.querySelectorAll('.code-block').forEach(el => {
+      items.push({ text: el.textContent.trim(), el });
+    });
+    // body text & notes
+    bodyEl.querySelectorAll('.body-text, .note, .warn').forEach(el => {
+      items.push({ text: el.textContent.trim(), el });
+    });
+
+    items.forEach(item => {
+      searchData.push({ sectionId: id, sectionTitle: title, text: item.text, el: item.el });
+    });
+  });
+}
+
+function handleSearch(val) {
+  const clear = document.getElementById('search-clear');
+  const results = document.getElementById('search-results');
+  const mainContent = document.getElementById('main-content');
+
+  if (!val.trim()) {
+    clearSearch();
+    return;
+  }
+  clear.classList.add('visible');
+  const query = val.toLowerCase();
+  const matches = searchData.filter(d => d.text.toLowerCase().includes(query)).slice(0, 30);
+
+  if (matches.length === 0) {
+    results.innerHTML = '<div class="no-results">No results found for "' + escHtml(val) + '"</div>';
+  } else {
+    results.innerHTML = matches.map((m, i) => {
+      const highlighted = m.text.replace(new RegExp('(' + escRegex(val) + ')', 'gi'), '<mark>$1</mark>');
+      const snippet = highlighted.length > 120 ? highlighted.substring(0, 120) + '…' : highlighted;
+      return `<div class="result-item" onclick="jumpToResult('${m.sectionId}', ${i})">
+        <div class="result-section">${escHtml(m.sectionTitle)}</div>
+        <div class="result-text">${snippet}</div>
+      </div>`;
+    }).join('');
+  }
+
+  results.classList.add('visible');
+  mainContent.style.display = 'none';
+}
+
+function jumpToResult(sectionId, idx) {
+  clearSearch();
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+  section.classList.add('open');
+  setTimeout(() => {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    section.classList.add('highlight-flash');
+    setTimeout(() => section.classList.remove('highlight-flash'), 1000);
+  }, 100);
+}
+
+function clearSearch() {
+  document.getElementById('search').value = '';
+  document.getElementById('search-clear').classList.remove('visible');
+  document.getElementById('search-results').classList.remove('visible');
+  document.getElementById('search-results').innerHTML = '';
+  document.getElementById('main-content').style.display = '';
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// auto-open first section of each day on load for a nice preview
+window.addEventListener('DOMContentLoaded', () => {
+  buildSearchIndex();
+});
+</script>
+</body>
+</html>
